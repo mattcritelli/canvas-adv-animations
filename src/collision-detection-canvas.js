@@ -35,26 +35,26 @@ function randomColor(colors) {
   return colors[Math.floor(Math.random() * colors.length)]
 }
 
-function distance(x1, y1, x2, y2) {
-  const xDist = x2 - x1
-  const yDist = y2 - y1
+function getDistance(x1, y1, x2, y2) {
+  let xDistance = x2 - x1
+  let yDistance = y2 - y1
 
-  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
+  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
 }
 
 // Objects
-function Object(x, y, radius, color) {
+function Circle(x, y, radius, color) {
   this.x = x
   this.y = y
   this.radius = radius
   this.color = color
 }
 
-Object.prototype.update = function() {
+Circle.prototype.update = function() {
   this.draw()
 }
 
-Object.prototype.draw = function() {
+Circle.prototype.draw = function() {
   c.beginPath()
   c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
   c.fillStyle = this.color
@@ -63,13 +63,14 @@ Object.prototype.draw = function() {
 }
 
 // Implementation
-let objects
+let circle1;
+let circle2;
 function init() {
-  objects = []
+  // objects = []
+  circle1 = new Circle(300, 300, 100, 'black')
+  circle2 = new Circle(undefined, undefined, 30, 'red')
 
-  for (let i = 0; i < 400; i++) {
-    // objects.push();
-  }
+
 }
 
 // Animation Loop
@@ -77,10 +78,18 @@ function animate() {
   requestAnimationFrame(animate)
   c.clearRect(0, 0, canvas.width, canvas.height)
 
-  // c.fillText('HTML CANVAS BOILERPLATE', mouse.x, mouse.y)
-  // objects.forEach(object => {
-  //  object.update();
-  // });
+  circle1.update()
+  circle2.x = mouse.x
+  circle2.y = mouse.y
+  circle2.update()
+  let distance = getDistance(circle1.x, circle1.y, circle2.x, circle2.y)
+
+  if(distance < circle1.radius + circle2.radius){
+    circle1.color = 'blue'
+  } else {
+    circle1.color = 'black'
+  }
+
 }
 
 init()

@@ -43,9 +43,9 @@ function getDistance(x1, y1, x2, y2) {
 }
 
 function generateParticle(){
-  let radius = randomIntFromRange(20, 20)
-  let x = randomIntFromRange(radius, innerWidth - radius)
-  let y = randomIntFromRange(radius, innerHeight - radius)
+  const x = Math.random() * innerWidth
+  const y = Math.random() * innerHeight
+  const radius = 10
   const color = 'blue'
   return new Particle(x, y, radius, color)
 }
@@ -54,32 +54,12 @@ function generateParticle(){
 function Particle(x, y, radius, color) {
   this.x = x
   this.y = y
-  this.velocity = {
-    x: Math.random() - 0.5,
-    y: Math.random() - 0.5
-  }
   this.radius = radius
   this.color = color
 }
 
-// Don't use ES6 arrow function, binds 'this' to window
-Particle.prototype.update = function(particles) {
+Particle.prototype.update = function() {
   this.draw()
-  for(let i = 0; i < particles.length; i++){
-    if (this === particles[i]) {
-      continue
-    } else {
-      let distance = getDistance(this.x, this.y, particles[i].x, particles[i].y)
-      if(distance - (this.radius + particles[i].radius) < 0){
-        console.log('has collided')
-      }
-    }
-  }
-
-  this.x += this.velocity.x
-  this.y += this.velocity.y
-
-
 }
 
 Particle.prototype.draw = function() {
@@ -91,24 +71,43 @@ Particle.prototype.draw = function() {
 }
 
 // Implementation
+
 let particles
 function init() {
   particles = []
 
-  for(let i = 0; i < 50; i++){
+  for(let i = 0; i < 400; i++){
     let newParticle = generateParticle()
 
-    if (i !== 0){
-      for(let j = 0; j < particles.length; j++){
-        let distance = getDistance(newParticle.x, newParticle.y, particles[j].x, particles[j].y)
-        if(distance - (newParticle.radius + particles[j].radius) < 0 ){
-          newParticle.x = randomIntFromRange(newParticle.radius, innerWidth - newParticle.radius)
-          newParticle.y = randomIntFromRange(newParticle.radius, innerHeight - newParticle.radius)
-          j = -1
-        }
-      }
+    if(particles.length === 0){
+      particles.push(newParticle)
     }
-    particles.push(newParticle)
+
+    if(particles.length > 0){
+      particles.forEach(particle => {
+        let distance = getDistance(particle.x, particle.y, newParticle.x, newParticle.y)
+        if (distance - (particle.radius + newParticle.radius) < 0){
+          return
+        } else {
+          particles.push(newParticle)
+        }
+      })
+    }
+    console.log(particles)
+  }
+}
+
+
+let particles
+function init() {
+  particles = []
+
+  for(let i = 0; i < 400; i++){
+    const x = Math.random() * innerWidth
+    const y = Math.random() * innerHeight
+    const radius = 10
+    const color = 'blue'
+    particles.push(new Particle(x, y, radius, color))
   }
 }
 
@@ -117,9 +116,16 @@ function animate() {
   requestAnimationFrame(animate)
   c.clearRect(0, 0, canvas.width, canvas.height)
 
-  particles.forEach(particle => {
-    particle.update(particles)
-  })
+  // particles.forEach(particle => {
+  //   particle.update()
+  // })
+
+  // let distance = getDistance(circle1.x, circle1.y, circle2.x, circle2.y)
+  // if(distance < circle1.radius + circle2.radius){
+  //   circle1.color = 'blue'
+  // } else {
+  //   circle1.color = 'black'
+  // }
 
 }
 
